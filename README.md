@@ -37,15 +37,32 @@ python main.py "https://feeds.npr.org/510289/podcast.xml" 3
 - 📡 **RSS Feeds** - Direct podcast feeds
 - 🌐 **Websites** - Searches for RSS feeds automatically
 
-## Tools
-1. **`main.py`** - Universal downloader (main entry point)
-2. **`podcast_downloader.py`** - Direct RSS downloader with transcription
-3. **`apple_podcast_extractor.py`** - Standalone RSS extractor
+## Project Structure
+
+```
+podscanner/
+├── main.py                # CLI entry point
+├── podscanner/           # Main package
+│   ├── scanner.py        # Core scanner logic
+│   ├── models.py         # Data models
+│   ├── utils.py          # Utility functions
+│   ├── extractors/       # Source-specific extractors
+│   │   ├── apple.py      # Apple Podcasts
+│   │   └── rss.py        # Generic websites
+│   └── processors/       # Processing components
+│       ├── downloader.py # Episode downloader
+│       └── transcriber.py # Audio transcriber
+├── downloads/            # Downloaded audio files
+├── transcripts/          # Generated transcripts
+└── processed_episodes.json # Episode tracking
+
+```
 
 ## Output
 - Audio files: `downloads/` directory
 - Transcripts: `transcripts/` directory
+- Episode tracking: `processed_episodes.json`
 
 ## Dependencies
-- `requests`, `feedparser`, `openai-whisper`, `torch`, `torchaudio`, `yt-dlp`, `psutil`
+- `requests`, `feedparser`, `openai-whisper`, `torch`, `torchaudio`, `yt-dlp`, `psutil`, `tqdm`
 - All listed in `requirements.txt`

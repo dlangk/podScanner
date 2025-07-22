@@ -41,30 +41,41 @@ python main.py "https://feeds.npr.org/510289/podcast.xml" 3
 
 # Alternative: Direct execution without activation
 ./venv/bin/python main.py <URL> [max_episodes]
-
-# Direct RSS downloader with transcription
-python podcast_downloader.py
-
-# Standalone RSS extractor
-python apple_podcast_extractor.py
 ```
 
 ## Architecture Overview
 
+### Package Structure
+
+```
+podscanner/                 # Main package directory
+├── __init__.py            # Package initialization
+├── scanner.py             # Core scanner logic (PodScanner class)
+├── models.py              # Data models (EpisodeInfo, DownloadConfig, ProcessingStats)
+├── utils.py               # Utility functions
+├── extractors/            # Source-specific extractors
+│   ├── __init__.py
+│   ├── apple.py          # Apple Podcasts RSS extraction
+│   └── rss.py            # Generic website RSS extraction
+└── processors/            # Processing components
+    ├── __init__.py
+    ├── downloader.py      # Episode downloading
+    └── transcriber.py     # Audio transcription
+```
+
 ### Core Components
 
-1. **`main.py`** - Entry point and lightweight orchestrator that routes requests to appropriate handlers
-2. **`pod_scanner.py`** - Main scanner class (`PodScanner`) that detects source types and coordinates processing
-3. **`models.py`** - Data classes: `EpisodeInfo`, `DownloadConfig`, `ProcessingStats`
-4. **`extractors.py`** - RSS feed extraction from various sources (Apple Podcasts, web scraping)
-5. **`downloader.py`** - `PodcastDownloader` class handles RSS parsing and episode downloading
-6. **`transcriber.py`** - `PodcastTranscriber` class manages parallel transcription with CPU optimization
-7. **`utils.py`** - Utility functions for file operations, sanitization, metadata handling
+1. **`main.py`** - CLI entry point that creates PodScanner instance
+2. **`podscanner/scanner.py`** - Main scanner class that detects source types and coordinates processing
+3. **`podscanner/models.py`** - Data classes for structured data handling
+4. **`podscanner/extractors/`** - Modular extractors for different podcast sources
+5. **`podscanner/processors/`** - Separate processors for downloading and transcription
+6. **`podscanner/utils.py`** - Shared utility functions
 
 ### Processing Flow
 
 1. **URL Detection**: `PodScanner.detect_source_type()` identifies the podcast source
-2. **RSS Extraction**: For Apple Podcasts/websites, extract RSS feed URLs using iTunes API or web scraping
+2. **RSS Extraction**: Source-specific extractors handle RSS feed discovery
 3. **Episode Parsing**: `PodcastDownloader.parse_episodes_from_feed()` parses RSS and creates `EpisodeInfo` objects
 4. **Download Phase**: Episodes are downloaded with progress tracking and deduplication
 5. **Transcription Phase**: `PodcastTranscriber` handles parallel transcription using Whisper model

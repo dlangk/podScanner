@@ -15,13 +15,13 @@ from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_compl
 from pathlib import Path
 from typing import List, Tuple
 
-from models import EpisodeInfo, DownloadConfig, ProcessingStats
+from ..models import EpisodeInfo, DownloadConfig, ProcessingStats
 
 def transcribe_audio_worker_func(episode_info_dict: dict) -> Tuple[dict, bool]:
     """Standalone worker function for multiprocessing"""
     import whisper
     from pathlib import Path
-    from models import EpisodeInfo
+    from ..models import EpisodeInfo
     
     # Reconstruct EpisodeInfo from dict
     episode_info = EpisodeInfo(**episode_info_dict)

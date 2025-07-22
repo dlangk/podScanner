@@ -115,4 +115,32 @@ def print_stats_summary(stats, title: str = "Processing Summary"):
     if hasattr(stats, 'transcribed'):
         print(f"   • Transcribed: {stats.transcribed}")
     if hasattr(stats, 'already_transcribed'):
-        print(f"   • Already transcribed: {stats.already_transcribed}") 
+        print(f"   • Already transcribed: {stats.already_transcribed}")
+
+def download_file(url: str, filepath: Path, chunk_size: int = 8192) -> bool:
+    """Download a file from URL to filepath with progress indicator"""
+    import requests
+    from tqdm import tqdm
+    
+    try:
+        print(f"📥 Downloading: {filepath.name}")
+        response = requests.get(url, stream=True, timeout=30)
+        response.raise_for_status()
+        
+        total_size = int(response.headers.get('content-length', 0))
+        
+        with open(filepath, 'wb') as f:
+            with tqdm(total=total_size, unit='B', unit_scale=True, desc=filepath.name) as pbar:
+                for chunk in response.iter_content(chunk_size=chunk_size):
+                    if chunk:
+                        f.write(chunk)
+                        pbar.update(len(chunk))
+        
+        print(f"✅ Downloaded: {filepath.name}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ Download failed for {filepath.name}: {str(e)}")
+        if filepath.exists():
+            filepath.unlink()  # Remove partial download
+        return False 

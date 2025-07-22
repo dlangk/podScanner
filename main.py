@@ -5,7 +5,7 @@ Lightweight orchestrator that routes requests to appropriate handlers
 """
 
 import sys
-from pod_scanner import PodScanner
+from podscanner import PodScanner
 
 def print_usage():
     """Print usage information"""

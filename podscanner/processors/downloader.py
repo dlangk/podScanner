@@ -12,8 +12,8 @@ from pathlib import Path
 from typing import List
 from urllib.parse import urlparse
 
-from models import EpisodeInfo, DownloadConfig, ProcessingStats
-from utils import sanitize_filename, get_episode_id, get_file_extension_from_url, load_json_file, save_json_file, create_episode_metadata
+from ..models import EpisodeInfo, DownloadConfig, ProcessingStats
+from ..utils import sanitize_filename, get_episode_id, get_file_extension_from_url, load_json_file, save_json_file, create_episode_metadata, download_file
 
 class PodcastDownloader:
     """Handles RSS feed parsing and episode downloading"""
@@ -104,31 +104,8 @@ class PodcastDownloader:
         return audio_url
     
     def download_file(self, url: str, filepath: Path) -> bool:
-        """Download a file from URL to filepath with progress indicator"""
-        try:
-            print(f"📥 Downloading: {filepath.name}")
-            response = requests.get(url, stream=True)
-            response.raise_for_status()
-            
-            total_size = int(response.headers.get('content-length', 0))
-            downloaded = 0
-            
-            with open(filepath, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-                        downloaded += len(chunk)
-                        
-                        if total_size > 0:
-                            percent = (downloaded / total_size) * 100
-                            print(f"\r📥 {filepath.name}: {percent:.1f}%", end='', flush=True)
-            
-            print(f"\n✅ Downloaded: {filepath.name}")
-            return True
-            
-        except Exception as e:
-            print(f"\n❌ Error downloading {url}: {e}")
-            return False
+        """Download a file using the utility function"""
+        return download_file(url, filepath)
     
     def download_episodes(self, episodes: List[EpisodeInfo]) -> tuple[List[EpisodeInfo], ProcessingStats]:
         """Download all episodes, return list of successfully downloaded episodes and stats"""
